@@ -1,0 +1,17 @@
+D:\Skrypotwe\AnalyzeFile\bin\Debug\net8.0\AnalyzeFile.exe
+D:\Skrypotwe\AnalyzeFile\bin\Debug\net8.0\AnalyzeFile.deps.json
+D:\Skrypotwe\AnalyzeFile\bin\Debug\net8.0\AnalyzeFile.runtimeconfig.json
+D:\Skrypotwe\AnalyzeFile\bin\Debug\net8.0\AnalyzeFile.dll
+D:\Skrypotwe\AnalyzeFile\bin\Debug\net8.0\AnalyzeFile.pdb
+D:\Skrypotwe\AnalyzeFile\bin\Debug\net8.0\Newtonsoft.Json.dll
+D:\Skrypotwe\AnalyzeFile\obj\Debug\net8.0\AnalyzeFile.csproj.AssemblyReference.cache
+D:\Skrypotwe\AnalyzeFile\obj\Debug\net8.0\AnalyzeFile.GeneratedMSBuildEditorConfig.editorconfig
+D:\Skrypotwe\AnalyzeFile\obj\Debug\net8.0\AnalyzeFile.AssemblyInfoInputs.cache
+D:\Skrypotwe\AnalyzeFile\obj\Debug\net8.0\AnalyzeFile.AssemblyInfo.cs
+D:\Skrypotwe\AnalyzeFile\obj\Debug\net8.0\AnalyzeFile.csproj.CoreCompileInputs.cache
+D:\Skrypotwe\AnalyzeFile\obj\Debug\net8.0\AnalyzeFile.csproj.CopyComplete
+D:\Skrypotwe\AnalyzeFile\obj\Debug\net8.0\AnalyzeFile.dll
+D:\Skrypotwe\AnalyzeFile\obj\Debug\net8.0\refint\AnalyzeFile.dll
+D:\Skrypotwe\AnalyzeFile\obj\Debug\net8.0\AnalyzeFile.pdb
+D:\Skrypotwe\AnalyzeFile\obj\Debug\net8.0\AnalyzeFile.genruntimeconfig.cache
+D:\Skrypotwe\AnalyzeFile\obj\Debug\net8.0\ref\AnalyzeFile.dll
