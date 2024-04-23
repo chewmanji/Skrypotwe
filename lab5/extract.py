@@ -1,31 +1,7 @@
 import re
 from datetime import datetime
 import ipaddress
-from enum import Enum
-from utils import logger, conf_logger
-
-class MessageType(Enum):
-    SUCCESSFUL_LOG = 1
-    UNSUCCESSFUL_LOG = 2
-    CONNECTION_CLOSED = 3
-    INCORRECT_PASSWORD = 4
-    INCORRECT_USERNAME = 5
-    BREAK_IN_ATTEMPT = 6
-    OTHER = 7
-
-
-PATTERN = r"""
-(?P<datetime>\w+\s+\d+\s+\d+:\d+:\d+)\s+
-(?P<hostname>\w+)\s+
-(?P<component>\w+)
-\[(?P<PID>\d+)\]:\s+
-(?P<event>.*)
-"""
-COMPILED_REGEX = re.compile(PATTERN, re.X)
-
-IPV4_PATTERN = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
-
-COMPILED_IPV4_PATTERN = re.compile(IPV4_PATTERN)
+from utils import *
 
 
 def get_ipv4s_from_log(
@@ -48,7 +24,8 @@ def get_ipv4s_from_log(
 
 
 def get_user_from_log(log_dict: dict[str, str | int | datetime]) -> str | None:
-    pattern = r"invalid user\s+(\w+)|for user\s+(\w+)|user=(\w+)|for (root)"
+    # pattern = r"invalid user\s+(\w+)|for user\s+(\w+)|user=(\w+)|for (root|\w+)"
+    pattern = r"invalid user\s+(\w+)|for user\s+(\w+)|\buser=(\w+)|(?<=for )(\w+)"
 
     name_match: re.Match = re.search(pattern, log_dict["event"], re.I)
 
@@ -60,11 +37,14 @@ def get_user_from_log(log_dict: dict[str, str | int | datetime]) -> str | None:
             return name
 
 
-def get_message_type(event_description: str) -> MessageType | None:
+def get_message_type(log_dict: dict[str, str | int | datetime]) -> MessageType | None:
+    event_description = log_dict["event"]
+
     patterns = {
         MessageType.SUCCESSFUL_LOG: r"accepted password",
         MessageType.UNSUCCESSFUL_LOG: r"authentication failure",
-        MessageType.CONNECTION_CLOSED: r"connection closed by|received disconnect|session closed",
+#        MessageType.CONNECTION_CLOSED: r"connection closed by|received disconnect|session closed",
+        MessageType.CONNECTION_CLOSED: r"session closed",
         MessageType.INCORRECT_PASSWORD: r"failed password",
         MessageType.INCORRECT_USERNAME: r"invalid user",
         MessageType.BREAK_IN_ATTEMPT: r"break-in attempt",
@@ -72,6 +52,38 @@ def get_message_type(event_description: str) -> MessageType | None:
 
     for mess_type, pattern in patterns.items():
         if re.search(pattern, event_description, re.I):
+            message_type_logging_handler(mess_type, log_dict, event_description)
             return mess_type
 
     return MessageType.OTHER
+
+
+def message_type_logging_handler(
+    message_type: MessageType, log_dict: dict, event_description: str
+) -> None:
+    
+    username = get_user_from_log(log_dict)
+
+    match message_type:
+        case MessageType.SUCCESSFUL_LOG:
+            logger_out.info(
+                f"""{username} has successfully logged in.
+                Event descritpion: {event_description}"""
+            )
+        case MessageType.CONNECTION_CLOSED:
+            logger_out.info(
+                f"""{username} has successfully closed a session.
+                Event descritpion: {event_description}"""
+            )
+        case MessageType.UNSUCCESSFUL_LOG | MessageType.INCORRECT_PASSWORD | MessageType.INCORRECT_USERNAME:
+            logger_out.warning(
+                f"""{username} tried to log in but failed.
+                Event description: {event_description}"""
+            )
+        case MessageType.BREAK_IN_ATTEMPT:
+            logger_err.critical(
+                f"""{username} probably tried to break-in!!!
+                Event description: {event_description}"""
+            )
+        case _:
+            pass

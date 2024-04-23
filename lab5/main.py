@@ -1,6 +1,6 @@
 from pathlib import Path
 import argparse
-from extract import get_user_from_log
+from extract import get_user_from_log, get_message_type
 from utils import read_log_file
 
 if __name__ == "__main__":
@@ -19,7 +19,7 @@ if __name__ == "__main__":
     # }
 
     for x in read_log_file(Path(args.path)):
-        m = get_user_from_log(x)
+        get_message_type(x)
         
    
 
