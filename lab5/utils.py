@@ -1,9 +1,9 @@
 from pathlib import Path
 from datetime import datetime
 import logging
-import sys
 import re
 from enum import Enum
+
 
 class MessageType(Enum):
     SUCCESSFUL_LOG = 1
@@ -12,7 +12,8 @@ class MessageType(Enum):
     INCORRECT_PASSWORD = 4
     INCORRECT_USERNAME = 5
     BREAK_IN_ATTEMPT = 6
-    OTHER = 7
+    ERROR = 7
+    OTHER = 8
 
 
 PATTERN = r"""
@@ -29,17 +30,13 @@ IPV4_PATTERN = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
 COMPILED_IPV4_PATTERN = re.compile(IPV4_PATTERN)
 
 
-logger_out = logging.getLogger("logger_out")
-logger_err = logging.getLogger("logger_err")
-
-
 def read_log_file(file_path: Path):
-    conf_logger(logger_out, sys.stdout, logging.DEBUG)
-    conf_logger(logger_err, sys.stderr, logging.ERROR)
     try:
         with open(file_path, "r") as file:
             for line in file:
-                logger_out.debug(f"Read bytes: {len(line.encode())}")
+                logging.debug(
+                    f"Read bytes: {len(line)}"
+                )  # isn't it in the wrong place?
                 yield line_to_dict(line)
 
     except FileNotFoundError:
@@ -56,9 +53,6 @@ def convert_log_values(log_dict: dict[str, str]) -> dict[str, str | int | dateti
     log_dict["PID"] = int(log_dict["PID"])
     return log_dict
 
-
-def conf_logger(logger: logging.Logger, output, severity=logging.DEBUG):
-    logger.setLevel(severity)
-    handler = logging.StreamHandler(output)
-    handler.setFormatter(logging.Formatter("%(levelname)s: %(message)s"))
-    logger.addHandler(handler)
+def dict_to_string(log_dict: dict[str, str | int | datetime]) -> str:
+    date_str = log_dict["datetime"].strftime("%b %d %H:%M:%S")
+    return f"{date_str} {log_dict['hostname']} {log_dict['component']}[{log_dict['PID']}]: {log_dict['event']}"
