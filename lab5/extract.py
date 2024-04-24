@@ -7,6 +7,15 @@ from utils import *
 def get_ipv4s_from_log(
     log_dict: dict[str, str | int | datetime]
 ) -> list[ipaddress.IPv4Address]:
+    """
+    Extracts valid IPv4 addresses from the "event" field of a log dictionary.
+
+    Args:
+        log_dict (dict[str, str | int | datetime]): A dictionary containing parsed log data.
+
+    Returns:
+        list[ipaddress.IPv4Address]: A list of valid IPv4 addresses found in the event message.
+    """
     ips: list[str] = re.findall(COMPILED_IPV4_PATTERN, log_dict["event"])
 
     valid_ips = []
@@ -24,7 +33,15 @@ def get_ipv4s_from_log(
 
 
 def get_user_from_log(log_dict: dict[str, str | int | datetime]) -> str | None:
-    # pattern = r"invalid user\s+(\w+)|for user\s+(\w+)|user=(\w+)|for (root|\w+)"
+    """
+    Attempts to extract the username from the "event" field of a log dictionary using a regular expression.
+
+    Args:
+        log_dict (dict[str, str | int | datetime]): A dictionary containing parsed log data.
+
+    Returns:
+        str | None: The extracted username if found, otherwise None.
+    """
     pattern = r"invalid user\s+(\w+)|for user\s+(\w+)|\buser=(\w+)|(?<=for )([a-zA-Z]+)"
 
     name_match: re.Match = re.search(pattern, log_dict["event"], re.I)
@@ -37,7 +54,16 @@ def get_user_from_log(log_dict: dict[str, str | int | datetime]) -> str | None:
             return name
 
 
-def get_message_type(log_dict: dict[str, str | int | datetime]) -> MessageType | None:
+def get_message_type(log_dict: dict[str, str | int | datetime]) -> MessageType:
+    """
+    Classifies the log message type based on patterns in the "event" field of a log dictionary.
+
+    Args:
+        log_dict (dict[str, str | int | datetime]): A dictionary containing parsed log data.
+
+    Returns:
+        MessageType: The identified message type.
+    """
     event_description = log_dict["event"]
 
     patterns = {

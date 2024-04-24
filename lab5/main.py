@@ -8,16 +8,34 @@ from stats import *
 
 
 def log_entry(message_type: MessageType, user: str, event_description: str):
+    """
+    Logs an entry to the configured logger based on message type, user, and event description.
+
+    Args:
+        message_type (MessageType): The message type of the log entry.
+        user (str): The username associated with the log entry (may be None).
+        event_description (str): The textual description of the log event.
+    """
     message_type_logging_handler(message_type, user, event_description)
 
 
 def extract_handler(
-    args,
+    args: argparse.Namespace,
     ips: list,
     user: str,
     mess_type: MessageType,
     log_dict: dict[str, str | int | datetime],
 ):
+    """
+    Handles the "extract" subcommand, formatting and printing extracted information.
+
+    Args:
+        args (argparse.Namespace): The parsed command-line arguments.
+        ips (list[ipaddress.IPv4Address]): A list of IPv4 addresses extracted from the log entry.
+        user (str | None): The username extracted from the log entry (may be None).
+        mess_type (MessageType | None): The message type extracted from the log entry (may be None).
+        log_dict (dict[str, str | int | datetime]): The original log entry dictionary.
+    """
     info: str = f"ENTRY: {dict_to_string(log_dict)}"
     if args.ips:
         info += f"\n\tIPS: {ips}"
@@ -30,7 +48,13 @@ def extract_handler(
         print(info)
 
 
-def stats_handler(args):
+def stats_handler(args: argparse.Namespace):
+    """
+    Handles the "stats" subcommand, performing and printing statistical calculations.
+
+    Args:
+        args (argparse.Namespace): The parsed command-line arguments.
+    """
     if args.random:
         entries = random_entries_from_random_user()
         print(f"Here are random number of entries releated to random user:")
